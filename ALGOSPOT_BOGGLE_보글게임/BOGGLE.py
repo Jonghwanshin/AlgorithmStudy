@@ -10,19 +10,22 @@ remain_init = [ [1, 1, 1, 1, 1],
 				[1, 1, 1, 1, 1],
 				[1, 1, 1, 1, 1] ]
 
-def find(y, x, w, bl, remain):
+def find(y, x, w, nw, bl, remain):
 	for d in dirs:
 		nx = x+d[0]
 		ny = y+d[1]
 		if ny > -1 and nx > -1 and ny < 5 and nx < 5 and remain[ny][nx] == 1:
-			if bl[ny][nx] == w[0]:
-				if len(w) == 1:
+			if bl[ny][nx] == nw[0]:
+				if len(nw) == 1:
 					return True
 				else:
-					return find(ny, nx, w[1:], bl, remain)
-			elif bl[ny][nx] not in w[1:]:
-					remain[ny][nx] = -1				
-	return False
+					ret = find(ny, nx, w, nw[1:], bl, remain)
+					if ret == True:
+						return True
+			elif bl[ny][nx] not in w:
+				remain[ny][nx] = -1
+	if len(nw) == 1:
+		return False
 
 rl = lambda: sys.stdin.readline()
 n = int(rl())
@@ -37,13 +40,14 @@ for ci in range(n):
 	for w in wl:
 		find_flag = False
 		for y, b in enumerate(bl):
-			if w[0] in b:
-				remain = copy.deepcopy(remain_init)
-				x = b.index(w[0])
-				ret = find(y, x, w[1:], bl, remain)
-				if ret == True:
-					find_flag = True
-					break
+			for ci, c in enumerate(b):
+				if w[0] == c:
+					remain = copy.deepcopy(remain_init)
+					x = ci
+					ret = find(y, x, w, w[1:], bl, remain)
+					if ret == True:
+						find_flag = True
+						break
 		if find_flag == True:
 			print w + ' ' + "YES"
 		else:
