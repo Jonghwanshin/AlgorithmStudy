@@ -4,55 +4,53 @@ import timeit
 start = timeit.default_timer()
 
 import sys
-import copy
 
-dirs = [ [-1,-1], [0,-1], [1,-1], [-1,0], [1,0], [-1,1], [0,1], [1,1] ]
-remain_init = [ [1, 1, 1, 1, 1],
-				[1, 1, 1, 1, 1],
-				[1, 1, 1, 1, 1],
-				[1, 1, 1, 1, 1],
-				[1, 1, 1, 1, 1] ]
 
-def find(y, x, w, nw, bl, remain):
-	for d in dirs:
-		nx = x+d[0]
-		ny = y+d[1]
-		if ny > -1 and nx > -1 and ny < 5 and nx < 5 and remain[ny][nx] == 1:
-			if bl[ny][nx] == nw[0]:
-				if len(nw) == 1:
-					return True
-				else:
-					ret = find(ny, nx, w, nw[1:], bl, remain)
-					if ret == True:
-						return True
-			elif bl[ny][nx] not in w:
-				remain[ny][nx] = -1
-	if len(nw) == 1:
-		remain_init[y][x] = -1
-		return False
+def find(y, x, w, wi):
+	if x < 0 or y < 0 or x > 4 or y > 4:
+		return 0 
+	
+	if cache[y][x][wi] != -1:
+		return cache[y][x][wi]
+
+	if w[wi] != bl[y][x]:
+		cache[y][x][wi] = 0
+		return 0
+	
+	if len(w)-1 == wi:
+		cache[y][x][wi] = 1
+		return 1
+
+	cache[x][y][wi] = find(y-1, x-1, w, wi+1) or \
+			find(y-1, x, w, wi+1) or \
+			find(y-1, x+1, w, wi+1) or \
+			find(y, x-1, w, wi+1) or \
+			find(y, x+1, w, wi+1) or \
+			find(y+1, x-1, w, wi+1) or \
+			find(y+1, x, w, wi+1) or \
+			find(y+1, x+1, w, wi+1)
+	return cache[x][y][wi]
 
 rl = lambda: sys.stdin.readline()
 n = int(rl())
-for ci in range(n):
-	bl = []
-	wl = []
+bl = []
+wl = []
+cache = []
+for tci in range(n):
 	for bi in range(5):
-		bl.append(rl().strip())
+		bl.insert(bi, rl().strip())
 	n = int(rl())
 	for wi in range(n):
-		wl.append(rl().strip())
+		wl.insert(wi, rl().strip())
 	for w in wl:
+		cache = [[[-1 for val in range(10)] for x in range(5)] for y in range(5)]
 		find_flag = False
 		for y, b in enumerate(bl):
-			for ci, c in enumerate(b):
-				if w[0] == c:
-					remain = copy.deepcopy(remain_init)
-					print remain
-					x = ci
-					ret = find(y, x, w, w[1:], bl, remain)
-					if ret == True:
-						find_flag = True
-						break
+			for x, c in enumerate(b):
+				ret = find(y, x, w, 0)
+				if ret == 1:
+					find_flag = True
+					break
 		if find_flag == True:
 			print w + ' ' + "YES"
 		else:
