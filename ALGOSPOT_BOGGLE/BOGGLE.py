@@ -1,60 +1,28 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-import timeit
-start = timeit.default_timer()
-
-import sys
-
-
-def find(y, x, w, wi):
-	if x < 0 or y < 0 or x > 4 or y > 4:
-		return 0 
-	
-	if cache[y][x][wi] != -1:
-		return cache[y][x][wi]
-
-	if w[wi] != bl[y][x]:
-		cache[y][x][wi] = 0
-		return 0
-	
-	if len(w)-1 == wi:
-		cache[y][x][wi] = 1
-		return 1
-
-	cache[x][y][wi] = find(y-1, x-1, w, wi+1) or \
-			find(y-1, x, w, wi+1) or \
-			find(y-1, x+1, w, wi+1) or \
-			find(y, x-1, w, wi+1) or \
-			find(y, x+1, w, wi+1) or \
-			find(y+1, x-1, w, wi+1) or \
-			find(y+1, x, w, wi+1) or \
-			find(y+1, x+1, w, wi+1)
-	return cache[x][y][wi]
-
-rl = lambda: sys.stdin.readline()
-n = int(rl())
-bl = []
-wl = []
-cache = []
-for tci in range(n):
-	for bi in range(5):
-		bl.insert(bi, rl().strip())
-	n = int(rl())
-	for wi in range(n):
-		wl.insert(wi, rl().strip())
-	for w in wl:
-		cache = [[[-1 for val in range(10)] for x in range(5)] for y in range(5)]
-		find_flag = False
-		for y, b in enumerate(bl):
-			for x, c in enumerate(b):
-				ret = find(y, x, w, 0)
-				if ret == 1:
-					find_flag = True
-					break
-		if find_flag == True:
-			print w + ' ' + "YES"
-		else:
-			print w + ' ' + "NO"
-
-end = timeit.default_timer()
-print(end - start)
+rl = lambda: raw_input().strip()
+cases = int(rl())
+seen = set()
+def find(board, y, x, word, s):
+    if (y, x, s) in seen: return False
+    seen.add((y, x, s)) # 핵심!!
+    if s == len(word): return True
+    if not (0 <= y < 5 and 0 <= x < 5): return False
+    if word[s] != board[y][x]: return False
+    for dx in xrange(-1, 2):
+        for dy in xrange(-1, 2):
+            if dx or dy:
+                if find(board, y + dy, x + dx, word, s+1):
+                    return True
+    return False
+for cc in xrange(cases):
+    board = [rl() for i in xrange(5)]
+    w = int(rl())
+    for i in xrange(w):
+        word = rl()
+        seen = set()
+        if any(find(board, i, j, word, 0) for i in xrange(5) for j in
+               xrange(5)):
+            print word, 'YES'
+        else:
+            print word, 'NO'
