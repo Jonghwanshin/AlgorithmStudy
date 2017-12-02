@@ -1,2 +1,6 @@
 # editor temporary
 .vscode/
+
+# py notebook temporary
+.ipynb_checkpoints
+**/.iypnb_checkpoints/*
