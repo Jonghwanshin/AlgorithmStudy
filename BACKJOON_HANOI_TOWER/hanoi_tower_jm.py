@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 
 rl = lambda: raw_input().strip()
-num_circle = int(rl())
-board = [[], [], []]
+ndisks = int(rl())
+phase = 0
 
-# put all circle into first board 
-for circle in xrange(num_circle):
-	board[0].append(circle)	
+def hanoiRecursive(ndisks, startPeg=1, endPeg=3):
+	global phase
+	if ndisks:
+		extraPeg = 6 - endPeg - startPeg
+		hanoiRecursive(ndisks-1, startPeg, extraPeg)
+		# print ' '.join([str(ndisks), "'s disk moving.."])
+		print ' '.join([str(startPeg), str(endPeg)])
+		hanoiRecursive(ndisks-1, extraPeg , endPeg)
+		phase += 1
 
-for circle in board[0]:
-	
-	
-
-
-
-		
+hanoiRecursive(ndisks)
+print phase
