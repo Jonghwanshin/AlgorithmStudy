@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import math
+
 def mergesort(front, last) :
 	if front < last :
-		half = (front + last) / 2
+		half = math.floor( (front + last) / 2 )
 		mergesort(front, half)
 		mergesort(half + 1, last)
 		merge(front, half, last)
